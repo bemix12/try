@@ -45,6 +45,12 @@
             min-width: var(--touch-target);
         }
 
+        button,
+        a[role="button"],
+        summary {
+            min-height: var(--touch-target);
+        }
+
         .safe-wrap {
             overflow-wrap: anywhere;
             word-break: break-word;
@@ -99,7 +105,9 @@
             border-radius: 24px;
             padding: 32px;
             max-width: 400px;
-            width: 90%;
+            width: min(92vw, 400px);
+            max-height: min(90dvh, 680px);
+            overflow-y: auto;
             transform: scale(0.9);
             transition: transform 0.3s;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
@@ -200,8 +208,15 @@
 
             #feedbackArea {
                 flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+                padding: 14px;
+            }
+
+            #feedbackContent {
+                flex-direction: column;
                 align-items: flex-start;
-                gap: 12px;
+                gap: 10px;
             }
 
             #gifContainer {
@@ -209,10 +224,24 @@
             }
 
             #gifContainer img {
-                width: min(100%, 300px) !important;
+                width: min(100%, 220px) !important;
                 height: auto !important;
-                max-height: 220px;
+                max-height: 150px;
                 object-fit: contain;
+            }
+
+            #feedbackText {
+                font-size: 0.95rem;
+                line-height: 1.45;
+            }
+
+            #nextButtonContainer {
+                margin-top: 8px;
+                width: 100%;
+            }
+
+            #nextQuestion {
+                width: 100%;
             }
 
             #optionsContainer .option-btn,
@@ -242,7 +271,7 @@
             }
 
             .strategy-table {
-                min-width: 640px;
+                min-width: 600px;
             }
 
             .meme-preview {
@@ -258,6 +287,21 @@
 
             .showcase-grid {
                 grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .modal-content {
+                padding: 20px;
+                border-radius: 18px;
+            }
+
+            .modal-content .flex.gap-3 {
+                flex-direction: column;
+            }
+
+            .modal-content .flex.gap-3 button {
+                width: 100%;
             }
         }
 
@@ -410,13 +454,14 @@
                 
                 <div id="optionsContainer" class="space-y-3 mb-6"></div>
 
-                <div id="feedbackArea" class="mt-6 p-6 rounded-lg hidden flex items-center gap-6 border-2">
-                    <div id="gifContainer" class="flex-shrink-0"></div>
-                    <div id="feedbackText" class="flex-1 text-lg"></div>
-                </div>
-
-                <div id="nextButtonContainer" class="mt-4 hidden">
+                <div id="feedbackArea" class="mt-4 p-4 rounded-lg hidden border-2">
+                    <div id="feedbackContent" class="flex flex-col sm:flex-row sm:items-center gap-4">
+                        <div id="gifContainer" class="flex-shrink-0"></div>
+                        <div id="feedbackText" class="flex-1 text-base sm:text-lg"></div>
+                    </div>
+                    <div id="nextButtonContainer" class="mt-3 hidden">
                     <button id="nextQuestion" class="touch-target px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-md hover:shadow-lg">→ Следующий вопрос</button>
+                    </div>
                 </div>
             </div>
         </section>
@@ -506,6 +551,7 @@
                             <img src="https://iili.io/qfdxeS9.md.png" alt="Psych meme 4" class="aspect-square w-full object-cover rounded-lg hover:opacity-80 transition cursor-pointer shadow-md">
                         </a>
                     </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -580,8 +626,8 @@
                         <summary class="touch-target text-blue-600 font-medium cursor-pointer hover:text-blue-800 list-none flex items-center gap-2">
                             <span>▼ View strategy table</span>
                         </summary>
-                        <div class="mt-4 overflow-x-auto">
-                            <table class="strategy-table w-full text-sm border-collapse">
+                        <div class="mt-4 overflow-x-auto w-full" style="-webkit-overflow-scrolling: touch;">
+                            <table class="strategy-table min-w-[600px] text-sm border-collapse">
                                 <thead>
                                     <tr class="bg-gray-100">
                                         <th class="p-3 text-left font-semibold">Strategy</th>
@@ -1207,12 +1253,12 @@
                     gifContainer.innerHTML = '';
                     if (isCorrect) {
                         const gifIndex = currentIndex % correctGifs.length;
-                        gifContainer.innerHTML = `<img src="${correctGifs[gifIndex]}" class="w-full max-w-xs h-auto object-cover rounded-lg shadow-md">`;
+                        gifContainer.innerHTML = `<img src="${correctGifs[gifIndex]}" class="w-full max-w-[260px] sm:max-w-xs max-h-[150px] sm:max-h-[220px] h-auto object-contain rounded-lg shadow-md">`;
                         feedbackText.innerHTML = `<span class="font-bold text-green-600 text-xl">✅ Correct!</span> <span class="text-gray-700">${currentQuestions[currentIndex].explanation}</span>`;
                         correctAnswers++;
                     } else {
                         const gifIndex = currentIndex % wrongGifs.length;
-                        gifContainer.innerHTML = `<img src="${wrongGifs[gifIndex]}" class="w-full max-w-xs h-auto object-cover rounded-lg shadow-md">`;
+                        gifContainer.innerHTML = `<img src="${wrongGifs[gifIndex]}" class="w-full max-w-[260px] sm:max-w-xs max-h-[150px] sm:max-h-[220px] h-auto object-contain rounded-lg shadow-md">`;
                         feedbackText.innerHTML = `
                             <span class="font-bold text-red-600 text-xl">❌ Wrong.</span> 
                             <span class="text-gray-700">${currentQuestions[currentIndex].explanation}</span><br>

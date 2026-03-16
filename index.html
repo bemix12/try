@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EmotiMeme Lab — Diploma Project</title>
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+        .meme-font { font-family: 'Impact', sans-serif; }
+        
+        /* Плавные тени и анимации */
+        .hover-lift {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .hover-lift:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .card-shadow {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        .card-shadow:hover {
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+        
+        .option-btn {
+            transition: all 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .option-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Модальное окно */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 24px;
+            padding: 32px;
+            max-width: 400px;
+            width: 90%;
+            transform: scale(0.9);
+            transition: transform 0.3s;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+        
+        .emotion-filter {
+            transition: all 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .emotion-filter:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Бургер-меню для мобилок */
+        .mobile-menu {
+            transition: transform 0.3s ease-in-out;
+        }
+        .mobile-menu.open {
+            transform: translateX(0);
+        }
+        @media (max-width: 768px) {
+            .desktop-menu {
+                display: none;
+            }
+            .mobile-menu {
+                position: fixed;
+                top: 0;
+                right: 0;
+                width: 250px;
+                height: 100vh;
+                background: white;
+                box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+                padding: 80px 20px 20px;
+                transform: translateX(100%);
+                z-index: 50;
+            }
+            .mobile-menu.open {
+                transform: translateX(0);
+            }
+            .burger-icon {
+                display: block;
+                z-index: 60;
+            }
+        }
+        @media (min-width: 769px) {
+            .burger-icon {
+                display: none;
+            }
+            .mobile-menu {
+                display: none;
+            }
+        }
+        .burger-icon {
+            cursor: pointer;
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+    <!-- НАВИГАЦИЯ с бургер-меню -->
+    <nav class="bg-white shadow-md sticky top-0 z-10">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-2">
+                    <span class="text-2xl">🎓</span>
+                    <span class="font-bold text-xl text-gray-800">EmotiMeme Lab</span>
+                </div>
+                
+                <!-- Десктопное меню -->
+                <div class="desktop-menu flex gap-6">
+                    <a href="#testing" class="text-gray-700 hover:text-blue-600 font-medium transition">Testing</a>
+                    <a href="#theory" class="text-gray-700 hover:text-blue-600 font-medium transition">Theory</a>
+                    <a href="#meme-lab" class="text-gray-700 hover:text-blue-600 font-medium transition">Translation Lab</a>
+                    <a href="#collection" class="text-gray-700 hover:text-blue-600 font-medium transition">Showcase</a>
+                </div>
+                
+                <!-- Бургер-иконка -->
+                <div class="burger-icon" onclick="toggleMobileMenu()">
+                    ☰
+                </div>
+            </div>
+        </div>
+        
+        <!-- Мобильное меню -->
+        <div id="mobileMenu" class="mobile-menu">
+            <div class="flex flex-col gap-4">
+                <a href="#testing" onclick="toggleMobileMenu()" class="text-gray-700 hover:text-blue-600 font-medium transition py-2">Testing</a>
+                <a href="#theory" onclick="toggleMobileMenu()" class="text-gray-700 hover:text-blue-600 font-medium transition py-2">Theory</a>
+                <a href="#meme-lab" onclick="toggleMobileMenu()" class="text-gray-700 hover:text-blue-600 font-medium transition py-2">Translation Lab</a>
+                <a href="#collection" onclick="toggleMobileMenu()" class="text-gray-700 hover:text-blue-600 font-medium transition py-2">Showcase</a>
+            </div>
+        </div>
+    </nav>
+
+    <script>
+        function toggleMobileMenu() {
+            document.getElementById('mobileMenu').classList.toggle('open');
+        }
+    </script>
+
+    <!-- ГЛАВНАЯ СЕКЦИЯ -->
+    <section class="bg-gradient-to-br from-blue-600 to-indigo-700 text-white py-16">
+        <div class="max-w-6xl mx-auto px-4">
+            <h1 class="text-4xl md:text-5xl font-bold text-center mb-4">🎓 EmotiMeme Lab</h1>
+            <p class="text-xl text-center text-blue-100 mb-12">Learn, translate, and create with memes — based on real research</p>
+            
+            <div class="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+                <a href="#testing" class="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 hover:bg-white/20 transition hover-lift">
+                    <div class="text-5xl mb-3">📋</div>
+                    <h2 class="text-2xl font-bold">Testing</h2>
+                    <p class="text-blue-100 text-sm mt-2">Training mode to memorize formatting rules (GOST/Methodology) via repetition and memes.</p>
+                </a>
+                <a href="#theory" class="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 hover:bg-white/20 transition hover-lift">
+                    <div class="text-5xl mb-3">📚</div>
+                    <h2 class="text-2xl font-bold">Theory for Translators</h2>
+                    <p class="text-blue-100 text-sm mt-2">Simplified explanation from student to student according research and experience.</p>
+                </a>
+                <a href="#meme-lab" class="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 hover:bg-white/20 transition hover-lift">
+                    <div class="text-5xl mb-3">🎭</div>
+                    <h2 class="text-2xl font-bold">Translation Lab</h2>
+                    <p class="text-blue-100 text-sm mt-2">Discover how Ekman's categorization of emotions, Skopos theory, and various translation solutions work using real examples.</p>
+                </a>
+                <a href="#collection" class="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 hover:bg-white/20 transition hover-lift">
+                    <div class="text-5xl mb-3">🏛️</div>
+                    <h2 class="text-2xl font-bold">Student Showcase</h2>
+                    <p class="text-blue-100 text-sm mt-2">Our students participated and created their own memes related to scientific works.</p>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <main class="max-w-6xl mx-auto px-4 py-12 space-y-20">
+        
+        <!-- 1. ТЕСТИРОВАНИЕ -->
+        <section id="testing" class="scroll-mt-20">
+            <h2 class="text-3xl font-bold mb-2">📋 Testing</h2>
+            <p class="text-gray-600 mb-6">Choose your academic degree and test your knowledge. Get instant feedback with memes and GIFs!</p>
+            
+            <div class="flex gap-4 mb-6">
+                <button id="bachelorBtn" class="px-6 py-3 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 transition shadow-md hover:shadow-lg hover-lift">👶 Bachelor</button>
+                <button id="masterBtn" class="px-6 py-3 bg-gray-200 text-gray-800 rounded-lg font-bold hover:bg-gray-300 transition shadow-md hover:shadow-lg hover-lift">🎓 Master</button>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-xl p-6 md:p-8 card-shadow">
+                <div class="flex justify-between items-center mb-4">
+                    <span id="progress" class="text-sm bg-gray-100 px-3 py-1 rounded-full">Вопрос 1/15</span>
+                    <span id="scoreDisplay" class="text-sm font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
+                        ✅ <span id="correctCount">0</span> | ❌ <span id="wrongCount">0</span>
+                    </span>
+                </div>
+                
+                <h3 id="questionText" class="text-xl font-semibold mb-6">Загрузка...</h3>
+                
+                <div id="optionsContainer" class="space-y-3 mb-6"></div>
+
+                <div id="feedbackArea" class="mt-6 p-6 rounded-lg hidden flex items-center gap-6 border-2">
+                    <div id="gifContainer" class="flex-shrink-0"></div>
+                    <div id="feedbackText" class="flex-1 text-lg"></div>
+                </div>
+
+                <div id="nextButtonContainer" class="mt-4 hidden">
+                    <button id="nextQuestion" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-md hover:shadow-lg">→ Следующий вопрос</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. MEME TRANSLATION LAB -->
+        <section id="meme-lab" class="scroll-mt-20">
+            <h2 class="text-3xl font-bold mb-2">🎭 Translation Lab</h2>
+            <p class="text-gray-600 mb-6">Discover how Ekman's categorization of emotions, Skopos theory, and various translation solutions work using real examples.</p>
+
+            <!-- ЦВЕТНЫЕ КНОПКИ ЭМОЦИЙ с подсветкой -->
+            <div class="flex flex-wrap gap-2 mb-6">
+                <button id="filterSadness" class="emotion-filter px-4 py-2 bg-blue-600 text-white rounded-full">😢 Sadness</button>
+                <button id="filterAnger" class="emotion-filter px-4 py-2 bg-gray-200 text-gray-800 rounded-full">😠 Anger</button>
+                <button id="filterFear" class="emotion-filter px-4 py-2 bg-gray-200 text-gray-800 rounded-full">😨 Fear</button>
+                <button id="filterDisgust" class="emotion-filter px-4 py-2 bg-gray-200 text-gray-800 rounded-full">🤢 Disgust</button>
+                <button id="filterHappiness" class="emotion-filter px-4 py-2 bg-gray-200 text-gray-800 rounded-full">😊 Happiness</button>
+                <button id="filterSurprise" class="emotion-filter px-4 py-2 bg-gray-200 text-gray-800 rounded-full">😲 Surprise</button>
+            </div>
+
+            <div id="memeCard" class="bg-white rounded-2xl shadow-xl p-6 card-shadow"></div>
+        </section>
+
+        <!-- 3. STUDENT SHOWCASE -->
+        <section id="collection" class="scroll-mt-20">
+            <h2 class="text-3xl font-bold mb-2">🏛️ Student Showcase</h2>
+            <p class="text-gray-600 mb-6">Our students participated and created their own memes related to scientific works. * the images are clickable.</p>
+
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- Design Requirements -->
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden card-shadow">
+                    <div class="bg-blue-100 p-4 border-b">
+                        <h3 class="font-bold text-xl flex items-center gap-2">📐 Design Requirements</h3>
+                    </div>
+                    <div class="p-4 grid grid-cols-2 gap-2">
+                        <a href="https://freeimage.host/i/qKQv13b" target="_blank" class="block hover-lift">
+                            <img src="https://iili.io/qKQv13b.md.png" alt="Student meme" class="aspect-square w-full object-cover rounded-lg hover:opacity-80 transition cursor-pointer shadow-md">
+                        </a>
+                        <a href="https://freeimage.host/i/qKQZJWJ" target="_blank" class="block hover-lift">
+                            <img src="https://iili.io/qKQZJWJ.md.png" alt="Student meme" class="aspect-square w-full object-cover rounded-lg hover:opacity-80 transition cursor-pointer shadow-md">
+                        </a>
+                        <a href="https://freeimage.host/i/qKtNIX1" target="_blank" class="block hover-lift">
+                            <img src="https://iili.io/qKtNIX1.md.png" alt="Student meme" class="aspect-square w-full object-cover rounded-lg hover:opacity-80 transition cursor-pointer shadow-md">
+                        </a>
+                        <a href="https://freeimage.host/i/qKteuUJ" target="_blank" class="block hover-lift">
+                            <img src="https://iili.io/qKteuUJ.md.png" alt="Student meme" class="aspect-square w-full object-cover rounded-lg hover:opacity-80 transition cursor-pointer shadow-md">
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Content -->
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden card-shadow">
+                    <div class="bg-green-100 p-4 border-b">
+                        <h3 class="font-bold text-xl flex items-center gap-2">📝 Content</h3>
+                    </div>
+                    <div class="p-4 grid grid-cols-2 gap-2">
+                        <a href="https://freeimage.host/i/qfJs8Tx" target="_blank" class="block hover-lift">
+                            <img src="https://iili.io/qfJs8Tx.md.png" alt="Content meme 1" class="aspect-square w-full object-cover rounded-lg hover:opacity-80 transition cursor-pointer shadow-md">
+                        </a>
+                        <a href="https://freeimage.host/i/qfJQCOJ" target="_blank" class="block hover-lift">
+                            <img src="https://iili.io/qfJQCOJ.md.png" alt="Content meme 2" class="aspect-square w-full object-cover rounded-lg hover:opacity-80 transition cursor-pointer shadow-md">
+                        </a>
+                        <a href="https://freeimage.host/i/qfJQkWQ" target="_blank" class="block hover-lift">
+                            <img src="https://iili.io/qfJQkWQ.md.png" alt="Content meme 3" class="aspect-square w-full object-cover rounded-lg hover:opacity-80 transition cursor-pointer shadow-md">
+                        </a>
+                        <a href="https://freeimage.host/i/qfJQDqN" target="_blank" class="block hover-lift">
+                            <img src="https://iili.io/qfJQDqN.md.png" alt="Content meme 4" class="aspect-square w-full object-cover rounded-lg hover:opacity-80 transition cursor-pointer shadow-md">
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Psychological Aspect -->
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden card-shadow">
+                    <div class="bg-purple-100 p-4 border-b">
+                        <h3 class="font-bold text-xl flex items-center gap-2">🧠 Psychological Aspect</h3>
+                    </div>
+                    <div class="p-4 grid grid-cols-2 gap-2">
+                        <a href="https://freeimage.host/i/qfdBm41" target="_blank" class="block hover-lift">
+                            <img src="https://iili.io/qfdBm41.md.png" alt="Psych meme 1" class="aspect-square w-full object-cover rounded-lg hover:opacity-80 transition cursor-pointer shadow-md">
+                        </a>
+                        <a href="https://freeimage.host/i/qfdClae" target="_blank" class="block hover-lift">
+                            <img src="https://iili.io/qfdClae.md.png" alt="Psych meme 2" class="aspect-square w-full object-cover rounded-lg hover:opacity-80 transition cursor-pointer shadow-md">
+                        </a>
+                        <a href="https://freeimage.host/i/qfdovQR" target="_blank" class="block hover-lift">
+                            <img src="https://iili.io/qfdovQR.md.png" alt="Psych meme 3" class="aspect-square w-full object-cover rounded-lg hover:opacity-80 transition cursor-pointer shadow-md">
+                        </a>
+                        <a href="https://freeimage.host/i/qfdxeS9" target="_blank" class="block hover-lift">
+                            <img src="https://iili.io/qfdxeS9.md.png" alt="Psych meme 4" class="aspect-square w-full object-cover rounded-lg hover:opacity-80 transition cursor-pointer shadow-md">
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. THEORY FOR TRANSLATORS -->
+        <section id="theory" class="scroll-mt-20">
+            <h2 class="text-3xl font-bold mb-2">📚 Theory for Translators</h2>
+            <p class="text-gray-600 mb-6">Simplified explanation from student to student according research and experience</p>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Skopos Theory -->
+                <div class="bg-white rounded-xl shadow-lg p-6 card-shadow">
+                    <div class="text-4xl mb-3">🎯</div>
+                    <h3 class="font-bold text-xl mb-2">Skopos Theory</h3>
+                    <p class="text-gray-700">According to Hans Vermeer, translation is mainly an intention-based work. In memes, "fidelity to the original" is secondary in relation to "fidelity to the purpose."</p>
+                    
+                    <details class="mt-4 group">
+                        <summary class="text-blue-600 font-medium cursor-pointer hover:text-blue-800 list-none flex items-center gap-2">
+                            <span>▼ Read more</span>
+                        </summary>
+                        <div class="mt-3 pl-4 space-y-3 text-gray-600">
+                            <p><span class="font-semibold">Priority of pragmatics.</span> If the goal of a meme is to make a local community laugh, complete deconstruction of the source text is permitted. Literal translation often leads to "humor entropy," where the meaning is clear but the comic effect is zero.</p>
+                            <p><span class="font-semibold">Flexibility of rules.</span> It's okay to redo the tone, swap characters or cultural realities if this helps to achieve the desired communicative effect on the target audience.</p>
+                            <p><span class="font-semibold">Situation analysis.</span> Before starting work, it is important to determine whether the meme is informative (the context needs to be explained) or purely attractive (it just needs to make people laugh).</p>
+                        </div>
+                    </details>
+                    
+                    <div class="mt-4 p-3 bg-blue-50 rounded-lg text-sm">📊 In our survey from 50 participants 78% find the memified format of academic instructions motivating.</div>
+                </div>
+
+                <!-- Multimodality -->
+                <div class="bg-white rounded-xl shadow-lg p-6 card-shadow">
+                    <div class="text-4xl mb-3">🎭</div>
+                    <h3 class="font-bold text-xl mb-2">Multimodality</h3>
+                    <p class="text-gray-700">An approach in which the translator works not only with text, but with all other channels of meaning transmission (modalities), such as images, sound, video, etc. A meme is not just text with a picture, but a single semiotic object. The translation must take into account the "visual anchors" that already convey meaning.</p>
+                    
+                    <details class="mt-4 group">
+                        <summary class="text-blue-600 font-medium cursor-pointer hover:text-blue-800 list-none flex items-center gap-2">
+                            <span>▼ Read more</span>
+                        </summary>
+                        <div class="mt-3 pl-4 space-y-3 text-gray-600">
+                            <p><span class="font-semibold">Third meaning.</span> It is important to realize that text and images may mean one thing separately, but together they create a "third meaning." The translator should work not with the phrase, but with this new entity.</p>
+                            <p><span class="font-semibold">Visual Anchoring.</span> If a character in the image has a specific expression, the text must explain the reason for this particular physiological reaction. You cannot write text that contradicts the character's micro-expressions.</p>
+                            <p><span class="font-semibold">Spatial limitation.</span> The visual format dictates conciseness. The translation should not clutter the frame, otherwise the "weight" of the text will kill the ease of perception.</p>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- Ekman's Basic Emotions -->
+                <div class="bg-white rounded-xl shadow-lg p-6 card-shadow">
+                    <div class="text-4xl mb-3">😊</div>
+                    <h3 class="font-bold text-xl mb-2">Ekman's Basic Emotions:</h3>
+                    <div class="text-gray-700 space-y-1">
+                        <p>😠 Anger</p>
+                        <p>😨 Fear</p>
+                        <p>😢 Sadness</p>
+                        <p>😲 Surprise</p>
+                        <p>🤢 Disgust</p>
+                        <p>😁 Joy</p>
+                    </div>
+                    <p class="text-gray-700 mt-3">Essential for emotion categorization work in our research.</p>
+                    <div class="mt-4 p-3 bg-blue-50 rounded-lg text-sm">💡 However, the triggers for these emotions vary across cultures.</div>
+                </div>
+
+                <!-- Translation strategies -->
+                <div class="bg-white rounded-xl shadow-lg p-6 card-shadow">
+                    <div class="text-4xl mb-3">🔄</div>
+                    <h3 class="font-bold text-xl mb-2">Translation strategies</h3>
+                    <p class="text-gray-700">When translating memes, it is possible to use completely different strategies. We deliberately exaggerated in the examples above and would like to point out that the best final option may be a combination of several strategies, or something new, depending on the goal set for the translator (Skopos).</p>
+                    
+                    <details class="mt-4 group">
+                        <summary class="text-blue-600 font-medium cursor-pointer hover:text-blue-800 list-none flex items-center gap-2">
+                            <span>▼ View strategy table</span>
+                        </summary>
+                        <div class="mt-4 overflow-x-auto">
+                            <table class="w-full text-sm border-collapse">
+                                <thead>
+                                    <tr class="bg-gray-100">
+                                        <th class="p-3 text-left font-semibold">Strategy</th>
+                                        <th class="p-3 text-left font-semibold">What are we changing?</th>
+                                        <th class="p-3 text-left font-semibold">Top priority</th>
+                                        <th class="p-3 text-left font-semibold">Result</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td class="p-3 border-b">Literal</td><td class="p-3 border-b">Nothing (only language)</td><td class="p-3 border-b">Accuracy of words</td><td class="p-3 border-b">Understandable, but often awkward or dry.</td></tr>
+                                    <tr><td class="p-3 border-b">Adaptation</td><td class="p-3 border-b">Cultural context</td><td class="p-3 border-b">Clarity of the situation</td><td class="p-3 border-b">The meme feels familiar, local.</td></tr>
+                                    <tr><td class="p-3 border-b">Anchoring</td><td class="p-3 border-b">The situation under the picture</td><td class="p-3 border-b">Visual logic</td><td class="p-3 border-b">Perfectly captures the character's emotion.</td></tr>
+                                    <tr><td class="p-3">Skopos-oriented</td><td class="p-3">The entire script</td><td class="p-3">Audience reaction</td><td class="p-3">Creating new content based on an old template.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </details>
+                </div>
+            </div>
+            
+            <!-- Благодарность -->
+            <div class="mt-8 p-6 bg-gray-100 rounded-lg text-center card-shadow">
+                <p class="text-gray-700 italic">I would like to express my sincere gratitude to my colleagues and mentors who have accompanied me on my research journey, as well as to every visitor to this resource for their interest in the topic.</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- Модальное окно результатов теста -->
+    <div id="testModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="text-center">
+                <div class="text-6xl mb-4">🎉</div>
+                <h3 class="text-2xl font-bold mb-2">Test Completed!</h3>
+                <div class="my-6 space-y-2">
+                    <p class="text-lg">✅ Correct: <span id="modalCorrect">0</span></p>
+                    <p class="text-lg">❌ Wrong: <span id="modalWrong">0</span></p>
+                    <p class="text-lg">📊 Accuracy: <span id="modalAccuracy">0</span>%</p>
+                </div>
+                <div class="flex gap-3 justify-center">
+                    <button onclick="restartTest()" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-md hover:shadow-lg">
+                        🔄 Start Again
+                    </button>
+                    <button onclick="closeModal()" class="px-6 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition shadow-md hover:shadow-lg">
+                        🎭 Go to Lab
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Футер с копирайтом -->
+    <footer class="bg-gray-800 text-white py-6 mt-12">
+        <div class="max-w-6xl mx-auto px-4 text-center">
+            <p>🎓 EmotiMeme Lab — Diploma Project, Karaganda National Research University named after academician Ye.A. Buketov, 2026</p>
+            <p class="text-gray-400 text-sm mt-2">© 2026 Korzh Izabella Romanovna. This work is protected by copyright law. Any use without permission is prohibited.</p>
+        </div>
+    </footer>
+
+    <script>
+        // ==================== ТВОИ ГИФКИ ====================
+        const correctGifs = [
+            "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3MHg5Y3dqcHAwNnRsamxiejExazMwenR3aWVkZWF3djhlbGMyYXF3OCZlcD12MV9naWZzX3RyZW5kaW5nJmN0PWc/5VKbvrjxpVJCM/giphy.gif",
+            "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExaGJpd3cxbnJ5c2xsNTQ0bmhmeTI2bWxwbGJlZ3pxdW5tN3U3aHQycCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/11sBLVxNs7v6WA/giphy.gif",
+            "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3a3QyM3htMjlneTJ3MmFpamlwcXdleXJydXB6eXdtNng0dnd1Z2R1dSZlcD12MV9naWZzX3RyZW5kaW5nJmN0PWc/ytu2GUYbvhz7zShGwS/giphy.gif",
+            "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOXBtc3RsZTVxMnlncnlvZHgwOWVyY2ZkZzNmaGJ3eWZ4aTlnOWFmdiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/GuDU8r5CnUoYtbS2CR/giphy.gif",
+            "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExeW00YjI5eGdvdTc2Njh0ZnEzNXM2Z3JyMmJ3ZDFscTU0bGIwdDFvNyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/5DQdk5oZzNgGc/giphy.gif",
+            "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3dTVpaWxoY2c5Nm9vem4zMnN4dnIwdnZ3b3c3MTA1dndudWRoNW8xZCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/geslvCFM31sFW/giphy.gif",
+            "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3dTVpaWxoY2c5Nm9vem4zMnN4dnIwdnZ3b3c3MTA1dndudWRoNW8xZCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/9U8vFgk0fD1OE/giphy.gif",
+            "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcnowZTJjYXE5bTBnbGRndXAzdmZuNjRid3lxMGI1bml4cXMyNjViYyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/RjVP4ZoxA3xeReLQT0/giphy.gif",
+            "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExaGJpd3cxbnJ5c2xsNTQ0bmhmeTI2bWxwbGJlZ3pxdW5tN3U3aHQycCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/ktABlcyUQIoHmBSlwb/giphy.gif",
+            "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExaGJpd3cxbnJ5c2xsNTQ0bmhmeTI2bWxwbGJlZ3pxdW5tN3U3aHQycCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/31lPv5L3aIvTi/giphy.gif",
+            "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExeW00YjI5eGdvdTc2Njh0ZnEzNXM2Z3JyMmJ3ZDFscTU0bGIwdDFvNyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/F56tNEGsltde/giphy.gif",
+            "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3MDVibG9mODVyNjhpZHRrdGF4YXV1YmJoaXc2bmwzbzQ2N2RpcDR5ciZlcD12MV9naWZzX3NlYXJjaCZjdD1n/vivvAs1RWTC8weU8tl/giphy.gif",
+            "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHU2bXhwcng2aHhqa2Rzd3A1OXU3OHZ2MmQ0bHh2NmdnZDc0azFucyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/8DUxtTxFntY7lpJnzy/giphy.gif",
+            "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHU2bXhwcng2aHhqa2Rzd3A1OXU3OHZ2MmQ0bHh2NmdnZDc0azFucyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/Sqfu14lSonVN219Zb6/giphy.gif",
+            "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3c2YyMDlnd3pqeDNsamRqc2hqOTFkdG1xNzlycXI4NGxsZDRyd3VqMiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/kEKcOWl8RMLde/giphy.gif"
+        ];
+
+        const wrongGifs = [
+            "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExMGlldnZwcDF5N3FnZXUwOXh2czRjeDVmZGM0YmhlMnd2MnJreHJhYiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/MOYUOOoIHOj9PKN1rE/giphy.gif",
+            "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3ZDE3NmhmOXBqdmhhbndyMzJpNWRxMmx1ODFlMnhjY3RwNzRxNTZ6dyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/98MaHVwJOmWMz4cz1K/giphy.gif",
+            "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExaDVxNHV5b2NoZzlyMmJzM291czl3bTJlYTJjZXk5ZW9lczYxa2ZzaiZlcD12MV9naWZzX3RyZW5kaW5nJmN0PWc/ji6zzUZwNIuLS/giphy.gif",
+            "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExaDVxNHV5b2NoZzlyMmJzM291czl3bTJlYTJjZXk5ZW9lczYxa2ZzaiZlcD12MV9naWZzX3RyZW5kaW5nJmN0PWc/meJN6qdG74lUKAJTQl/giphy.gif",
+            "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3MHg5Y3dqcHAwNnRsamxiejExazMwenR3aWVkZWF3djhlbGMyYXF3OCZlcD12MV9naWZzX3RyZW5kaW5nJmN0PWc/FY8c5SKwiNf1EtZKGs/giphy.gif",
+            "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3N281NzlrZjVwODQ4M25pcmhzdGM5ZHFmcXJmOG9zMWxjdHZiMmRwNSZlcD12MV9naWZzX3RyZW5kaW5nJmN0PWc/WRQBXSCnEFJIuxktnw/giphy.gif",
+            "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3ZWl6Y3lnbHU0czNqN2RoYnV6MXR0OWUybWxlY2liejRibTh0N3J4OSZlcD12MV9naWZzX3RyZW5kaW5nJmN0PWc/3o7aCTPPm4OHfRLSH6/giphy.gif",
+            "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3ZWl6Y3lnbHU0czNqN2RoYnV6MXR0OWUybWxlY2liejRibTh0N3J4OSZlcD12MV9naWZzX3RyZW5kaW5nJmN0PWc/tXL4FHPSnVJ0A/giphy.gif",
+            "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3NHA1Zjl1MWc4YjZ3cGZlMm14d2dwd3FyNzFrMmFzaDJ0bTRla2FsOCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/H5C8CevNMbpBqNqFjl/giphy.gif",
+            "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3YXNjbGF0bDhpdm9wcDR5NXIyajZlYnBjbnVqeHY3bnF3M2lsdDh5cSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/TpsuCxwsNH8gatbpR5/giphy.gif",
+            "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3eGhkYmQxaTFjMGIwY2R4bjVjZWR4Z2c5eGRtNXR3eHNlcG9ndzVweiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/AYMzMAgZIci8IgezfQ/giphy.gif",
+            "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3eGhkYmQxaTFjMGIwY2R4bjVjZWR4Z2c5eGRtNXR3eHNlcG9ndzVweiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/ruyS8Zw9sBqE5UjOnY/giphy.gif",
+            "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMnd4cmI3cGFhNzEwZm9pNWZid3kxZGhnOWZjMjVmN2Y3MWMwamUxeSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/JYZ397GsFrFtu/giphy.gif",
+            "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNGoxdjFvOHg1bG56MTRmdXN0czlpc241ZTdkdDhtZTR1M2txdm10bSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/bAftZ12SC0uEjLndIh/giphy.gif",
+            "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3NjFsNGx3b29rZmFtb2QzNWFyOXcwdGUyN2NycWEycWp3Zm44N2R0ayZlcD12MV9naWZzX3NlYXJjaCZjdD1n/TpsuCxwsNH8gatbpR5/giphy.gif"
+        ];
+
+        // ==================== НОВЫЕ ВОПРОСЫ ДЛЯ МАГИСТРОВ ====================
+        const masterQuestions = [
+            {
+                id: 101,
+                question: "Какие виды выпускной работы предусмотрены для магистрантов?",
+                options: [
+                    "Дипломная работа и исследовательская работа",
+                    "Магистерская диссертация и выпускной проект",
+                    "Дипломный проект и научная статья",
+                    "Только магистерская диссертация"
+                ],
+                correct: 1,
+                explanation: "Магистрант выполняет либо магистерскую диссертацию (исследование), либо выпускной проект (практическую разработку)."
+            },
+            {
+                id: 102,
+                question: "Какой минимальный объём установлен для выпускных работ магистрантов?",
+                options: [
+                    "Диссертация — 60 стр., проект — 30 стр.",
+                    "Диссертация — 70 стр., проект — 20 стр.",
+                    "Диссертация — 80 стр., проект — 40 стр.",
+                    "Диссертация — 50 стр., проект — 20 стр."
+                ],
+                correct: 1,
+                explanation: "Минимальные объёмы: магистерская диссертация — 70 страниц, магистерский проект — 20 страниц. Приложения в этот объём не входят."
+            },
+            {
+                id: 103,
+                question: "Какой минимальный объём установлен для введения и заключения?",
+                options: [
+                    "Введение — 1 стр., заключение — 1 стр.",
+                    "Введение — 2 стр., заключение — 2 стр.",
+                    "Введение — 3 стр., заключение — 3 стр.",
+                    "Введение — 5 стр., заключение — 5 стр."
+                ],
+                correct: 2,
+                explanation: "И введение, и заключение должны быть не менее 3 страниц."
+            },
+            {
+                id: 104,
+                question: "Какие требования установлены к количеству источников?",
+                options: [
+                    "Диссертация — 40, проект — 10",
+                    "Диссертация — 50, проект — 20",
+                    "Диссертация — 60, проект — 20",
+                    "Диссертация — 70, проект — 30"
+                ],
+                correct: 2,
+                explanation: "Минимум: 60 источников — для магистерской диссертации, 20 — для выпускного проекта."
+            },
+            {
+                id: 105,
+                question: "По какому стандарту оформляется список использованных источников?",
+                options: ["APA", "MLA", "ГОСТ 7.1–2003", "Chicago"],
+                correct: 2,
+                explanation: "Библиографическое описание оформляется по ГОСТ 7.1–2003."
+            },
+            {
+                id: 106,
+                question: "Как располагаются источники в библиографическом списке?",
+                options: [
+                    "В алфавитном порядке",
+                    "По году публикации",
+                    "В порядке появления в тексте",
+                    "По типу источника"
+                ],
+                correct: 2,
+                explanation: "Источники располагаются в том порядке, в котором они впервые упоминаются в тексте."
+            },
+            {
+                id: 107,
+                question: "Как оформляются ссылки на источники в тексте?",
+                options: [
+                    "В круглых скобках (Автор, год)",
+                    "В квадратных скобках с номером источника",
+                    "В подстрочных сносках",
+                    "В конце главы"
+                ],
+                correct: 1,
+                explanation: "Ссылки указываются в квадратных скобках. Пример: [12] или [12; 45]."
+            },
+            {
+                id: 108,
+                question: "На каких языках обязательно должен быть представлен реферат?",
+                options: [
+                    "Только на русском",
+                    "Только на английском",
+                    "На казахском, русском и английском",
+                    "На одном языке по выбору"
+                ],
+                correct: 2,
+                explanation: "Реферат обязательно выполняется на трёх языках."
+            },
+            {
+                id: 109,
+                question: "Какой объём установлен для реферата?",
+                options: [
+                    "1–3 страницы",
+                    "2–12 страниц",
+                    "Не менее 2 страниц на каждый язык, но не более 9 страниц всего",
+                    "3–10 страниц"
+                ],
+                correct: 2,
+                explanation: "Рекомендуемый объём реферата — не менее 2 страниц на каждый язык, но не более 9 страниц машинописного текста в целом."
+            },
+            {
+                id: 110,
+                question: "Какие сопроводительные документы обязательно прикладываются к работе?",
+                options: [
+                    "Только отзыв руководителя",
+                    "Антиплагиат и рецензия",
+                    "Антиплагиат, нормоконтроль, реферат, рецензия, отзыв руководителя",
+                    "Только антиплагиат"
+                ],
+                correct: 2,
+                explanation: "Антиплагиат, нормоконтроль, реферат, рецензия, отзыв руководителя - это обязательный комплект документов перед защитой."
+            },
+            {
+                id: 111,
+                question: "Какие основные параметры оформления текста установлены требованиями?",
+                options: [
+                    "Arial 12, полуторный интервал, абзац 1.25",
+                    "Times New Roman 14, одинарный интервал, абзац 0.8",
+                    "Calibri 14, двойной интервал, абзац 1.5",
+                    "Times New Roman 12, полуторный интервал, абзац 2"
+                ],
+                correct: 1,
+                explanation: "Основные параметры: Times New Roman, 14 кегль, одинарный интервал, абзац 0.8."
+            },
+            {
+                id: 112,
+                question: "Какие поля страницы установлены требованиями?",
+                options: [
+                    "20 мм (2 см) со всех сторон",
+                    "Левое 30 мм (3 см), правое 10 мм (1 см), верхнее 20 мм (2см), нижнее 25 мм (2,5см)",
+                    "Левое 25 мм (2,5 см), остальные 20 мм (2см)",
+                    "По умолчанию Word"
+                ],
+                correct: 1,
+                explanation: "Левое 3 см (30 мм), Правое 1 см (10 мм), Верхнее 2 см (20 мм), Нижнее 2,5 см (25 мм). Такие поля нужны для переплёта и нормоконтроля."
+            },
+            {
+                id: 113,
+                question: "Где должен располагаться номер страницы?",
+                options: [
+                    "В правом верхнем углу",
+                    "Внизу по центру",
+                    "Внизу справа",
+                    "Вверху по центру"
+                ],
+                correct: 1,
+                explanation: "Нумерация сквозная внизу страницы по центру."
+            },
+            {
+                id: 114,
+                question: "С какой страницы начинает отображаться номер страницы?",
+                options: [
+                    "С титульного листа",
+                    "С содержания",
+                    "С введения",
+                    "С первой главы"
+                ],
+                correct: 2,
+                explanation: "Обложка, титульный лист и содержание входят в нумерацию, но номер впервые ставится на странице введения."
+            },
+            {
+                id: 115,
+                question: "Что верно относительно приложений?",
+                options: [
+                    "Они входят в общий объём работы",
+                    "Они не входят в общий объём работы",
+                    "Они считаются половиной страницы",
+                    "Их объём ограничен 10 страницами"
+                ],
+                correct: 1,
+                explanation: "Приложения не входят в основной объём магистерской работы."
+            }
+        ];
+
+        // ВОПРОСЫ ДЛЯ БАКАЛАВРОВ (без изменений)
+        const bachelorQuestions = [
+            {
+                id: 1,
+                question: "Минимальный объём дипломной работы:",
+                options: ["25 страниц", "30 страниц", "40 страниц", "50 страниц"],
+                correct: 3,
+                explanation: "Минимальный объём дипломной работы — 50 страниц"
+            },
+            {
+                id: 2,
+                question: "Минимальный объём выпускного проекта:",
+                options: ["15 страниц", "20 страниц", "30 страниц", "50 страниц"],
+                correct: 1,
+                explanation: "Минимальный объём выпускного проекта — 20 страниц"
+            },
+            {
+                id: 3,
+                question: "В чём принципиальная разница между дипломной работой и дипломным проектом?",
+                options: [
+                    "В проекте обязательно только теория",
+                    "В проекте всегда групповая работа",
+                    "Проект возможен в группах до 3 человек и ориентирован на практическую разработку и обоснование конкретного объекта/решения",
+                    "Работа не требует практической части"
+                ],
+                correct: 2,
+                explanation: "Проект возможен в группах до 3 человек и ориентирован на практическую разработку"
+            },
+            {
+                id: 4,
+                question: "Какой межстрочный интервал установлен регламентом?",
+                options: ["Полуторный", "Двойной", "Одинарный", "По усмотрению студента"],
+                correct: 2,
+                explanation: "Регламентом установлен одинарный межстрочный интервал"
+            },
+            {
+                id: 5,
+                question: "Какой шрифт и кегль обязательны?",
+                options: ["Arial 12", "Times New Roman 12", "Times New Roman 14", "Calibri 14"],
+                correct: 2,
+                explanation: "Обязательный шрифт — Times New Roman 14"
+            },
+            {
+                id: 6,
+                question: "Какие поля страницы должны быть установлены?",
+                options: [
+                    "20 мм со всех сторон",
+                    "Левое 30 мм, правое 10 мм, верхнее 20 мм, нижнее 25 мм",
+                    "Левое 25 мм, правое 25 мм",
+                    "По умолчанию Word"
+                ],
+                correct: 1,
+                explanation: "Поля: левое 30 мм, правое 10 мм, верхнее 20 мм, нижнее 25 мм"
+            },
+            {
+                id: 7,
+                question: "Абзацный отступ должен составлять:",
+                options: ["1,25 см", "1 см", "0,8 см", "Не регламентируется"],
+                correct: 2,
+                explanation: "Абзацный отступ — 0,8 см"
+            },
+            {
+                id: 8,
+                question: "С какого элемента начинается нумерация страниц?",
+                options: [
+                    "С титульного листа",
+                    "С содержания",
+                    "С первой страницы введения",
+                    "С основной части"
+                ],
+                correct: 2,
+                explanation: "Нумерация начинается с первой страницы введения"
+            },
+            {
+                id: 9,
+                question: "Какие элементы входят в общую нумерацию, но номер на них не ставится?",
+                options: [
+                    "Только титульный лист",
+                    "Обложка, титульный лист и задание",
+                    "Только обложка",
+                    "Содержание"
+                ],
+                correct: 1,
+                explanation: "Обложка, титульный лист и задание входят в нумерацию, но номер не ставится"
+            },
+            {
+                id: 10,
+                question: "Минимальное количество источников в дипломной работе:",
+                options: ["20", "25", "30", "40"],
+                correct: 2,
+                explanation: "Минимум 30 источников"
+            },
+            {
+                id: 11,
+                question: "Как оформляются ссылки в тексте?",
+                options: [
+                    "В круглых скобках (Иванов, 2020)",
+                    "В квадратных скобках с номером источника",
+                    "В сносках внизу страницы",
+                    "Без строгих требований"
+                ],
+                correct: 1,
+                explanation: "Ссылки оформляются в квадратных скобках с номером источника"
+            },
+            {
+                id: 12,
+                question: "Что обязательно должно быть во введении дипломной работы?",
+                options: [
+                    "Только актуальность и цель",
+                    "Актуальность, степень изученности, цель, задачи, методы, объект и предмет, значимость, структура",
+                    "Только гипотеза",
+                    "Только обзор литературы"
+                ],
+                correct: 1,
+                explanation: "Во введении должны быть все перечисленные элементы"
+            },
+            {
+                id: 13,
+                question: "Минимальный объём введения в дипломной работе:",
+                options: ["1 страница", "2 страницы", "3 страницы", "Не регламентируется"],
+                correct: 1,
+                explanation: "Минимальный объём введения — 2 страницы"
+            },
+            {
+                id: 14,
+                question: "Приложения:",
+                options: [
+                    "Входят в общий объём работы",
+                    "Не входят в объём",
+                    "Всегда обязательны",
+                    "Запрещены"
+                ],
+                correct: 1,
+                explanation: "Приложения не входят в общий объём работы"
+            },
+            {
+                id: 15,
+                question: "Какие документы ОБЯЗАТЕЛЬНО должны сопровождать дипломную работу перед защитой?",
+                options: [
+                    "Только отзыв руководителя",
+                    "Антиплагиат, нормоконтроль, рецензия, отзыв научного руководителя",
+                    "Только антиплагиат",
+                    "Только рецензия"
+                ],
+                correct: 1,
+                explanation: "Обязательны: антиплагиат, нормоконтроль, рецензия, отзыв научного руководителя"
+            }
+        ];
+
+        // ==================== ДАННЫЕ ДЛЯ MEME LAB ====================
+        const memeData = {
+            sadness: {
+                emoji: "😢",
+                title: "Sadness",
+                bgClass: "from-blue-100 to-blue-200",
+                image: "https://avatars.mds.yandex.net/i?id=c2c5a9c54e6b966acaa7cb51e3bd0cf5e35f6978-4602151-images-thumbs&n=13",
+                originalText: "Me after sending a risky text and seeing 'typing…' disappear",
+                originalEmotion: "sadness+anxiety",
+                strategies: [
+                    { type: "LITERAL TRANSLATION", text: "«Я после того, как отправил рискованное сообщение и \"печатает…\" исчезло»", emotion: "Sadness → Mild anxiety", use: "точность сохранена, но звучит неестественно из-за синтаксической кальки и отсутствия адаптации термина «исчезло» под живой сленговый контекст" },
+                    { type: "CULTURAL SUBSTITUTION", text: "«Я, когда написал \"нам надо поговорить\" и в ответ тишина»", emotion: "Sadness + existential dread", use: "«нам надо поговорить» — культурно заряженная фраза" },
+                    { type: "VISUAL ANCHORING", text: "«когда чел онлайн, а ответа нет уже 3 дня...»", emotion: "Sadness preserved", use: "работает, если упор на образ" },
+                    { type: "MODULATION + SKOPOS SHIFT", text: "«Когда стипендия через месяц»", emotion: "Sadness → Financial despair", use: "Skopos: student reality" }
+                ]
+            },
+            anger: {
+                emoji: "😠",
+                title: "Anger",
+                bgClass: "from-red-100 to-red-200",
+                image: "https://upload.wikimedia.org/wikipedia/en/1/1f/WomanYellingAtACat_meme.jpg",
+                originalText: "When someone says 'calm down'",
+                originalEmotion: "anger",
+                strategies: [
+                    { type: "LITERAL", text: "«Когда тебе говорят \"успокойся\"»", emotion: "гнев сохраняется", use: "" },
+                    { type: "CULTURAL SUBSTITUTION", text: "«Когда тебе говорят \"ты слишком эмоциональная\"»", emotion: "Anger → Anger + gender frustration", use: "работает в русскоязычном фем-дискурсе" },
+                    { type: "VISUAL ANCHORING", text: "«Я и моя реакция на \"а я говорииил\"»", emotion: "Anger → General irritation", use: "" },
+                    { type: "MODULATION + SKOPOS", text: "«Я работаю за троих второй год, а премию получил племянник директора?!»", emotion: "Anger → Sense of Injustice", use: "Skopos: Irony about corporate injustice" }
+                ]
+            },
+            fear: {
+                emoji: "😨",
+                title: "Fear",
+                bgClass: "from-gray-100 to-gray-200",
+                image: "https://en.meming.world/images/en/thumb/5/5f/Scared_Hamster.jpg/300px-Scared_Hamster.jpg",
+                originalText: "I'm scared stiff",
+                originalEmotion: "fear",
+                strategies: [
+                    { type: "LITERAL", text: "«Я напуган до смерти»", emotion: "Fear (30%) - слишком сухо, буквально", use: "" },
+                    { type: "CULTURAL SUBSTITUTION", text: "«Когда ночью вспомнил, что завтра нужно сдать поделки из шишек»", emotion: "Fear + Parent's panic", use: "очень узнаваемо, типичная боль родителей в СНГ" },
+                    { type: "VISUAL ANCHORING", text: "«Когда случайно нажал позвонить»", emotion: "Fear → социальная паника", use: "" },
+                    { type: "MODULATION + SKOPOS", text: "<span class='block mb-2'>«Когда проверка дипломов уже началась, а ты вспомнил про список литературы»</span><span class='block text-sm text-gray-600 mb-1'>📊 Emotion shift: Fear → Academic dread</span><span class='block mb-3'>💡 Skopos: students</span><span class='block mb-2'>«Когда мама вернулась, а ты еще не вытащил мясо из морозилки»</span><span class='block text-sm text-gray-600 mb-1'>📊 Emotion shift: Fear → Survival instinct</span><span class='block'>💡 Skopos: family reality</span>", emotion: "", use: "" }
+                ]
+            },
+            disgust: {
+                emoji: "🤢",
+                title: "Disgust",
+                bgClass: "from-green-100 to-green-200",
+                image: "https://upload.wikimedia.org/wikipedia/en/4/45/Side_Eyeing_Chloe.jpg",
+                originalText: "When someone says pineapple belongs on pizza",
+                originalEmotion: "disgust + bewilderment",
+                strategies: [
+                    { type: "LITERAL", text: "«Когда кто-то говорит, что ананас — это нормально на пицце»", emotion: "", use: "" },
+                    { type: "CULTURAL SUBSTITUTION", text: "«Когда кто-то говорит, что окрошку надо заправлять кефиром»", emotion: "anger + willingness to debate", use: "вызывает такую же бурную дискуссию в русскоязычной среде" },
+                    { type: "VISUAL ANCHORING", text: "«Лицо, когда услышал откровенную чушь»", emotion: "Disgust → Intellectual contempt", use: "" },
+                    { type: "MODULATION + SKOPOS", text: "«Филолог, услышавший \"ихний\"»", emotion: "Disgust → Professional irritation", use: "Skopos: Intellectual gatekeeping" }
+                ]
+            },
+            happiness: {
+                emoji: "😊",
+                title: "Happiness",
+                bgClass: "from-yellow-100 to-yellow-200",
+                image: "https://www.thetimes.com/imageserver/image/%2Fmethode%2Ftimes%2Fprod%2Fweb%2Fbin%2F0a209460-4442-11ea-a083-1ec392b38124.jpg?crop=1013%2C1267%2C126%2C12",
+                originalText: "Submitted assignment. Teacher cancels class.",
+                originalEmotion: "happiness",
+                strategies: [
+                    { type: "LITERAL", text: "«Сдал задание. Препод отменил пару.»", emotion: "neutral", use: "когда важен только факт" },
+                    { type: "CULTURAL SUBSTITUTION", text: "«Закрыл сессию. Жив.»", emotion: "Happiness + relief", use: "триумф для студента в СНГ, вызывающий больше эмоций, чем просто сданное задание" },
+                    { type: "VISUAL ANCHORING", text: "«Я, когда дедлайн перенесли»", emotion: "Happiness preserved", use: "Текст объясняет жест через ситуацию внезапной удачи" },
+                    { type: "MODULATION + SKOPOS", text: "«Прошел босса с 1 HP без хилок»", emotion: "Happiness → Achievement euphoria", use: "Skopos: Gaming. Мы полностью меняем учебный контекст на игровой. Для геймера победа над сложным боссом (с минимальным здоровьем) является высшей точкой удовлетворения и гордости." }
+                ]
+            },
+            surprise: {
+                emoji: "😲",
+                title: "Surprise",
+                bgClass: "from-cyan-100 to-cyan-200",
+                image: "https://external-preview.redd.it/0UF4Gqxwe330DKxNz1_GpmkwIDX0e_TyJdXbbkDVm78.jpg?auto=webp&s=5274a519198bd315bd9eb50c2cee0d9a7e0e8126",
+                originalText: "Me when I spend all my money and have no money",
+                originalEmotion: "Surprise + Denial",
+                strategies: [
+                    { type: "LITERAL", text: "«Я после того, как потратил все свои деньги и у меня не осталось денег»", emotion: "neutral", use: "Мем теряется, потому что нет игры слов или акцента" },
+                    { type: "CULTURAL SUBSTITUTION", text: "«Я, когда делал перевод Kaspi по номеру телефона, и ошибся цифрой»", emotion: "Surprise → Existential dread", use: "заменяем абстрактную проблему траты денег на конкретику знакомую каждому в Казахстане, где секундная невнимательность превращается в квест по возврату средств" },
+                    { type: "VISUAL ANCHORING", text: "«Я, когда зашел в приложение банка после выходных»", emotion: "Surprise preserved", use: "Мы заменяем общую фразу «нет денег» на понятные нам маркеры" },
+                    { type: "MODULATION + SKOPOS", text: "«Намазала на лицо сразу три сыворотки с ретинолом и кислотами, а утром проснулась с лицом цвета помидора»", emotion: "Surprise → Physical Pain", use: "Skopos: beginners in facial skin care." }
+                ]
+            }
+        };
+
+        // Функция обновления карточки мема
+        function updateMemeCard(emotion) {
+            const data = memeData[emotion];
+            const card = document.getElementById('memeCard');
+            
+            let strategiesHtml = '';
+            data.strategies.forEach(strategy => {
+                strategiesHtml += `
+                    <div class="border-l-4 border-blue-500 pl-4 py-2 bg-white rounded-r-lg shadow-sm hover:shadow-md transition">
+                        <span class="text-sm font-bold text-blue-600">${strategy.type}</span>
+                        <div class="font-medium">${strategy.text}</div>
+                        ${strategy.emotion ? `<p class="text-sm text-gray-600 mt-1">📊 Emotion shift: ${strategy.emotion}</p>` : ''}
+                        ${strategy.use ? `<p class="text-xs text-gray-500 mt-1">💡 ${strategy.use}</p>` : ''}
+                    </div>
+                `;
+            });
+
+            card.innerHTML = `
+                <div class="grid md:grid-cols-2 gap-6">
+                    <!-- Мем с цветным фоном -->
+                    <div class="bg-gradient-to-br ${data.bgClass} rounded-xl p-6 flex flex-col items-center shadow-inner">
+                        <img src="${data.image}" class="w-full max-h-96 object-contain rounded-lg mb-4 shadow-md" alt="${data.title} meme">
+                        <p class="text-center font-bold text-xl">${data.originalText}</p>
+                        <div class="mt-3 flex items-center gap-2">
+                            <span class="text-3xl">${data.emoji}</span>
+                            <span class="text-gray-700">${data.originalEmotion}</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Стратегии -->
+                    <div class="space-y-4">
+                        ${strategiesHtml}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Состояние тренажера
+        let currentQuestions = bachelorQuestions;
+        let currentIndex = 0;
+        let answered = false;
+        let correctAnswers = 0;
+        let wrongAnswers = 0;
+        let totalQuestions = currentQuestions.length;
+
+        // DOM для тренажера
+        const questionText = document.getElementById('questionText');
+        const optionsContainer = document.getElementById('optionsContainer');
+        const feedbackArea = document.getElementById('feedbackArea');
+        const gifContainer = document.getElementById('gifContainer');
+        const feedbackText = document.getElementById('feedbackText');
+        const nextBtnContainer = document.getElementById('nextButtonContainer');
+        const progressSpan = document.getElementById('progress');
+        const correctSpan = document.getElementById('correctCount');
+        const wrongSpan = document.getElementById('wrongCount');
+        const bachelorBtn = document.getElementById('bachelorBtn');
+        const masterBtn = document.getElementById('masterBtn');
+
+        // Функции для модального окна
+        function showTestResults() {
+            const accuracy = Math.round((correctAnswers / totalQuestions) * 100);
+            document.getElementById('modalCorrect').textContent = correctAnswers;
+            document.getElementById('modalWrong').textContent = wrongAnswers;
+            document.getElementById('modalAccuracy').textContent = accuracy;
+            document.getElementById('testModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('testModal').classList.remove('active');
+            window.location.href = '#meme-lab';
+        }
+
+        function restartTest() {
+            closeModal();
+            currentIndex = 0;
+            correctAnswers = 0;
+            wrongAnswers = 0;
+            correctSpan.textContent = '0';
+            wrongSpan.textContent = '0';
+            answered = false;
+            feedbackArea.classList.add('hidden');
+            nextBtnContainer.classList.add('hidden');
+            displayQuestion();
+        }
+
+        // Функция показа вопроса
+        function displayQuestion() {
+            if (!currentQuestions.length) return;
+            const q = currentQuestions[currentIndex];
+            questionText.textContent = q.question;
+            
+            let html = '';
+            q.options.forEach((opt, idx) => {
+                html += `
+                    <div class="option-btn p-4 border rounded-lg hover:bg-blue-50 cursor-pointer transition ${answered ? 'pointer-events-none opacity-60' : ''}" data-idx="${idx}">
+                        ${opt}
+                    </div>
+                `;
+            });
+            optionsContainer.innerHTML = html;
+            
+            progressSpan.textContent = `Вопрос ${currentIndex+1}/${totalQuestions}`;
+            
+            document.querySelectorAll('.option-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    if (answered) return;
+                    const selected = parseInt(e.currentTarget.dataset.idx);
+                    const correct = currentQuestions[currentIndex].correct;
+                    const isCorrect = (selected === correct);
+                    
+                    gifContainer.innerHTML = '';
+                    if (isCorrect) {
+                        const gifIndex = currentIndex % correctGifs.length;
+                        gifContainer.innerHTML = `<img src="${correctGifs[gifIndex]}" class="w-48 h-48 object-cover rounded-lg shadow-md">`;
+                        feedbackText.innerHTML = `<span class="font-bold text-green-600 text-xl">✅ Correct!</span> <span class="text-gray-700">${currentQuestions[currentIndex].explanation}</span>`;
+                        correctAnswers++;
+                    } else {
+                        const gifIndex = currentIndex % wrongGifs.length;
+                        gifContainer.innerHTML = `<img src="${wrongGifs[gifIndex]}" class="w-48 h-48 object-cover rounded-lg shadow-md">`;
+                        feedbackText.innerHTML = `
+                            <span class="font-bold text-red-600 text-xl">❌ Wrong.</span> 
+                            <span class="text-gray-700">${currentQuestions[currentIndex].explanation}</span><br>
+                            <span class="text-sm text-gray-500">Correct: ${currentQuestions[currentIndex].options[currentQuestions[currentIndex].correct]}</span>
+                        `;
+                        wrongAnswers++;
+                    }
+                    
+                    correctSpan.textContent = correctAnswers;
+                    wrongSpan.textContent = wrongAnswers;
+                    
+                    feedbackArea.classList.remove('hidden');
+                    answered = true;
+                    
+                    document.querySelectorAll('.option-btn').forEach((opt, i) => {
+                        if (i === currentQuestions[currentIndex].correct) {
+                            opt.classList.add('bg-green-100', 'border-green-500');
+                        } else if (i === selected && !isCorrect) {
+                            opt.classList.add('bg-red-100', 'border-red-500');
+                        }
+                    });
+                    
+                    nextBtnContainer.classList.remove('hidden');
+                });
+            });
+        }
+
+        // Следующий вопрос
+        document.getElementById('nextQuestion')?.addEventListener('click', () => {
+            if (currentIndex < currentQuestions.length - 1) {
+                currentIndex++;
+            } else {
+                showTestResults();
+                return;
+            }
+            
+            answered = false;
+            feedbackArea.classList.add('hidden');
+            nextBtnContainer.classList.add('hidden');
+            displayQuestion();
+        });
+
+        // Переключение уровней
+        bachelorBtn.addEventListener('click', () => {
+            currentQuestions = bachelorQuestions;
+            totalQuestions = bachelorQuestions.length;
+            currentIndex = 0;
+            correctAnswers = 0;
+            wrongAnswers = 0;
+            correctSpan.textContent = '0';
+            wrongSpan.textContent = '0';
+            answered = false;
+            feedbackArea.classList.add('hidden');
+            nextBtnContainer.classList.add('hidden');
+            
+            bachelorBtn.classList.add('bg-blue-600', 'text-white');
+            bachelorBtn.classList.remove('bg-gray-200', 'text-gray-800');
+            masterBtn.classList.remove('bg-blue-600', 'text-white');
+            masterBtn.classList.add('bg-gray-200', 'text-gray-800');
+            
+            displayQuestion();
+        });
+
+        masterBtn.addEventListener('click', () => {
+            currentQuestions = masterQuestions;
+            totalQuestions = masterQuestions.length;
+            currentIndex = 0;
+            correctAnswers = 0;
+            wrongAnswers = 0;
+            correctSpan.textContent = '0';
+            wrongSpan.textContent = '0';
+            answered = false;
+            feedbackArea.classList.add('hidden');
+            nextBtnContainer.classList.add('hidden');
+            
+            masterBtn.classList.add('bg-blue-600', 'text-white');
+            masterBtn.classList.remove('bg-gray-200', 'text-gray-800');
+            bachelorBtn.classList.remove('bg-blue-600', 'text-white');
+            bachelorBtn.classList.add('bg-gray-200', 'text-gray-800');
+            
+            displayQuestion();
+        });
+
+        // Инициализация Meme Lab
+        updateMemeCard('sadness');
+
+        // Обработчики для фильтра эмоций с подсветкой активной
+        document.getElementById('filterSadness').addEventListener('click', function() {
+            document.querySelectorAll('.emotion-filter').forEach(b => {
+                b.classList.remove('bg-blue-600', 'bg-red-600', 'bg-gray-600', 'bg-green-600', 'bg-yellow-600', 'bg-cyan-600', 'text-white');
+                b.classList.add('bg-gray-200', 'text-gray-800');
+            });
+            this.classList.remove('bg-gray-200', 'text-gray-800');
+            this.classList.add('bg-blue-600', 'text-white');
+            updateMemeCard('sadness');
+        });
+
+        document.getElementById('filterAnger').addEventListener('click', function() {
+            document.querySelectorAll('.emotion-filter').forEach(b => {
+                b.classList.remove('bg-blue-600', 'bg-red-600', 'bg-gray-600', 'bg-green-600', 'bg-yellow-600', 'bg-cyan-600', 'text-white');
+                b.classList.add('bg-gray-200', 'text-gray-800');
+            });
+            this.classList.remove('bg-gray-200', 'text-gray-800');
+            this.classList.add('bg-red-600', 'text-white');
+            updateMemeCard('anger');
+        });
+
+        document.getElementById('filterFear').addEventListener('click', function() {
+            document.querySelectorAll('.emotion-filter').forEach(b => {
+                b.classList.remove('bg-blue-600', 'bg-red-600', 'bg-gray-600', 'bg-green-600', 'bg-yellow-600', 'bg-cyan-600', 'text-white');
+                b.classList.add('bg-gray-200', 'text-gray-800');
+            });
+            this.classList.remove('bg-gray-200', 'text-gray-800');
+            this.classList.add('bg-gray-600', 'text-white');
+            updateMemeCard('fear');
+        });
+
+        document.getElementById('filterDisgust').addEventListener('click', function() {
+            document.querySelectorAll('.emotion-filter').forEach(b => {
+                b.classList.remove('bg-blue-600', 'bg-red-600', 'bg-gray-600', 'bg-green-600', 'bg-yellow-600', 'bg-cyan-600', 'text-white');
+                b.classList.add('bg-gray-200', 'text-gray-800');
+            });
+            this.classList.remove('bg-gray-200', 'text-gray-800');
+            this.classList.add('bg-green-600', 'text-white');
+            updateMemeCard('disgust');
+        });
+
+        document.getElementById('filterHappiness').addEventListener('click', function() {
+            document.querySelectorAll('.emotion-filter').forEach(b => {
+                b.classList.remove('bg-blue-600', 'bg-red-600', 'bg-gray-600', 'bg-green-600', 'bg-yellow-600', 'bg-cyan-600', 'text-white');
+                b.classList.add('bg-gray-200', 'text-gray-800');
+            });
+            this.classList.remove('bg-gray-200', 'text-gray-800');
+            this.classList.add('bg-yellow-600', 'text-white');
+            updateMemeCard('happiness');
+        });
+
+        document.getElementById('filterSurprise').addEventListener('click', function() {
+            document.querySelectorAll('.emotion-filter').forEach(b => {
+                b.classList.remove('bg-blue-600', 'bg-red-600', 'bg-gray-600', 'bg-green-600', 'bg-yellow-600', 'bg-cyan-600', 'text-white');
+                b.classList.add('bg-gray-200', 'text-gray-800');
+            });
+            this.classList.remove('bg-gray-200', 'text-gray-800');
+            this.classList.add('bg-cyan-600', 'text-white');
+            updateMemeCard('surprise');
+        });
+
+        // Старт тренажера
+        displayQuestion();
+    </script>
+</body>
+</html>

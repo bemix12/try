@@ -9,8 +9,46 @@
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+        :root {
+            --mobile-padding: 16px;
+            --touch-target: 48px;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; }
+
+        html, body {
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+            text-rendering: optimizeLegibility;
+        }
+
+        body.menu-open {
+            overflow: hidden;
+            touch-action: none;
+        }
+
         .meme-font { font-family: 'Impact', sans-serif; }
+
+        img, video, canvas {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .touch-target {
+            min-height: var(--touch-target);
+            min-width: var(--touch-target);
+        }
+
+        .safe-wrap {
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
         
         /* Плавные тени и анимации */
         .hover-lift {
@@ -80,44 +118,157 @@
         }
         
         /* Бургер-меню для мобилок */
+        .mobile-menu-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(3px);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            z-index: 40;
+        }
+
+        .mobile-menu-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
         .mobile-menu {
-            transition: transform 0.3s ease-in-out;
+            transition: transform 0.35s ease, opacity 0.35s ease;
         }
-        .mobile-menu.open {
-            transform: translateX(0);
+
+        .mobile-link {
+            min-height: var(--touch-target);
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-radius: 10px;
         }
+
         @media (max-width: 768px) {
+            body {
+                font-size: 16px;
+            }
+
             .desktop-menu {
                 display: none;
             }
+
             .mobile-menu {
                 position: fixed;
                 top: 0;
                 right: 0;
-                width: 250px;
-                height: 100vh;
-                background: white;
-                box-shadow: -2px 0 10px rgba(0,0,0,0.1);
-                padding: 80px 20px 20px;
-                transform: translateX(100%);
+                width: min(85vw, 320px);
+                max-width: 100vw;
+                height: 100dvh;
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(10px);
+                box-shadow: -8px 0 30px rgba(0, 0, 0, 0.18);
+                padding: 84px 16px 20px;
+                transform: translateX(110%);
+                opacity: 0;
                 z-index: 50;
+                overflow-y: auto;
             }
+
             .mobile-menu.open {
                 transform: translateX(0);
+                opacity: 1;
             }
+
             .burger-icon {
-                display: block;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
                 z-index: 60;
             }
+
+            h1 { font-size: clamp(2rem, 7vw, 2.4rem) !important; }
+            h2 { font-size: clamp(1.5rem, 5.5vw, 1.9rem) !important; }
+            h3 { font-size: clamp(1.125rem, 4.5vw, 1.35rem) !important; }
+            .text-sm, .text-xs { font-size: 1rem !important; }
+
+            main {
+                padding-left: var(--mobile-padding) !important;
+                padding-right: var(--mobile-padding) !important;
+            }
+
+            section {
+                scroll-margin-top: 88px;
+            }
+
+            #feedbackArea {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            #gifContainer {
+                width: 100%;
+            }
+
+            #gifContainer img {
+                width: min(100%, 300px) !important;
+                height: auto !important;
+                max-height: 220px;
+                object-fit: contain;
+            }
+
+            #optionsContainer .option-btn,
+            .emotion-filter,
+            details summary,
+            button,
+            .desktop-menu a,
+            .mobile-menu a {
+                min-height: var(--touch-target);
+            }
+
+            .testing-switch {
+                display: grid;
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .testing-switch button,
+            .emotion-filter {
+                width: 100%;
+            }
+
+            .emotion-filters {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 12px;
+            }
+
+            .strategy-table {
+                min-width: 640px;
+            }
+
+            .meme-preview {
+                max-height: 300px;
+                object-fit: contain;
+            }
         }
+
+        @media (max-width: 420px) {
+            .emotion-filters {
+                grid-template-columns: 1fr;
+            }
+
+            .showcase-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
         @media (min-width: 769px) {
-            .burger-icon {
-                display: none;
-            }
-            .mobile-menu {
+            .burger-icon,
+            .mobile-menu,
+            .mobile-menu-overlay {
                 display: none;
             }
         }
+
         .burger-icon {
             cursor: pointer;
             font-size: 24px;
@@ -144,27 +295,64 @@
                 </div>
                 
                 <!-- Бургер-иконка -->
-                <div class="burger-icon" onclick="toggleMobileMenu()">
+                <button id="burgerButton" class="burger-icon touch-target" aria-label="Toggle mobile menu" aria-expanded="false" type="button">
                     ☰
-                </div>
+                </button>
             </div>
         </div>
         
         <!-- Мобильное меню -->
-        <div id="mobileMenu" class="mobile-menu">
+        <div id="menuOverlay" class="mobile-menu-overlay" aria-hidden="true"></div>
+        <div id="mobileMenu" class="mobile-menu" aria-hidden="true">
             <div class="flex flex-col gap-4">
-                <a href="#testing" onclick="toggleMobileMenu()" class="text-gray-700 hover:text-blue-600 font-medium transition py-2">Testing</a>
-                <a href="#theory" onclick="toggleMobileMenu()" class="text-gray-700 hover:text-blue-600 font-medium transition py-2">Theory</a>
-                <a href="#meme-lab" onclick="toggleMobileMenu()" class="text-gray-700 hover:text-blue-600 font-medium transition py-2">Translation Lab</a>
-                <a href="#collection" onclick="toggleMobileMenu()" class="text-gray-700 hover:text-blue-600 font-medium transition py-2">Showcase</a>
+                <a href="#testing" class="mobile-link text-gray-700 hover:text-blue-600 font-medium transition">Testing</a>
+                <a href="#theory" class="mobile-link text-gray-700 hover:text-blue-600 font-medium transition">Theory</a>
+                <a href="#meme-lab" class="mobile-link text-gray-700 hover:text-blue-600 font-medium transition">Translation Lab</a>
+                <a href="#collection" class="mobile-link text-gray-700 hover:text-blue-600 font-medium transition">Showcase</a>
             </div>
         </div>
     </nav>
 
     <script>
-        function toggleMobileMenu() {
-            document.getElementById('mobileMenu').classList.toggle('open');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const menuOverlay = document.getElementById('menuOverlay');
+        const burgerButton = document.getElementById('burgerButton');
+
+        function closeMobileMenu() {
+            mobileMenu.classList.remove('open');
+            menuOverlay.classList.remove('open');
+            document.body.classList.remove('menu-open');
+            burgerButton.setAttribute('aria-expanded', 'false');
+            mobileMenu.setAttribute('aria-hidden', 'true');
         }
+
+        function openMobileMenu() {
+            mobileMenu.classList.add('open');
+            menuOverlay.classList.add('open');
+            document.body.classList.add('menu-open');
+            burgerButton.setAttribute('aria-expanded', 'true');
+            mobileMenu.setAttribute('aria-hidden', 'false');
+        }
+
+        function toggleMobileMenu() {
+            if (mobileMenu.classList.contains('open')) {
+                closeMobileMenu();
+            } else {
+                openMobileMenu();
+            }
+        }
+
+        burgerButton.addEventListener('click', toggleMobileMenu);
+        menuOverlay.addEventListener('click', closeMobileMenu);
+        mobileMenu.querySelectorAll('a').forEach((link) => {
+            link.addEventListener('click', closeMobileMenu);
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                closeMobileMenu();
+            }
+        });
     </script>
 
     <!-- ГЛАВНАЯ СЕКЦИЯ -->
@@ -205,9 +393,9 @@
             <h2 class="text-3xl font-bold mb-2">📋 Testing</h2>
             <p class="text-gray-600 mb-6">Choose your academic degree and test your knowledge. Get instant feedback with memes and GIFs!</p>
             
-            <div class="flex gap-4 mb-6">
-                <button id="bachelorBtn" class="px-6 py-3 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 transition shadow-md hover:shadow-lg hover-lift">👶 Bachelor</button>
-                <button id="masterBtn" class="px-6 py-3 bg-gray-200 text-gray-800 rounded-lg font-bold hover:bg-gray-300 transition shadow-md hover:shadow-lg hover-lift">🎓 Master</button>
+            <div class="testing-switch flex gap-4 mb-6">
+                <button id="bachelorBtn" class="touch-target px-6 py-3 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 transition shadow-md hover:shadow-lg hover-lift">👶 Bachelor</button>
+                <button id="masterBtn" class="touch-target px-6 py-3 bg-gray-200 text-gray-800 rounded-lg font-bold hover:bg-gray-300 transition shadow-md hover:shadow-lg hover-lift">🎓 Master</button>
             </div>
 
             <div class="bg-white rounded-2xl shadow-xl p-6 md:p-8 card-shadow">
@@ -218,7 +406,7 @@
                     </span>
                 </div>
                 
-                <h3 id="questionText" class="text-xl font-semibold mb-6">Загрузка...</h3>
+                <h3 id="questionText" class="safe-wrap text-xl font-semibold mb-6">Загрузка...</h3>
                 
                 <div id="optionsContainer" class="space-y-3 mb-6"></div>
 
@@ -228,7 +416,7 @@
                 </div>
 
                 <div id="nextButtonContainer" class="mt-4 hidden">
-                    <button id="nextQuestion" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-md hover:shadow-lg">→ Следующий вопрос</button>
+                    <button id="nextQuestion" class="touch-target px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-md hover:shadow-lg">→ Следующий вопрос</button>
                 </div>
             </div>
         </section>
@@ -239,13 +427,13 @@
             <p class="text-gray-600 mb-6">Discover how Ekman's categorization of emotions, Skopos theory, and various translation solutions work using real examples.</p>
 
             <!-- ЦВЕТНЫЕ КНОПКИ ЭМОЦИЙ с подсветкой -->
-            <div class="flex flex-wrap gap-2 mb-6">
-                <button id="filterSadness" class="emotion-filter px-4 py-2 bg-blue-600 text-white rounded-full">😢 Sadness</button>
-                <button id="filterAnger" class="emotion-filter px-4 py-2 bg-gray-200 text-gray-800 rounded-full">😠 Anger</button>
-                <button id="filterFear" class="emotion-filter px-4 py-2 bg-gray-200 text-gray-800 rounded-full">😨 Fear</button>
-                <button id="filterDisgust" class="emotion-filter px-4 py-2 bg-gray-200 text-gray-800 rounded-full">🤢 Disgust</button>
-                <button id="filterHappiness" class="emotion-filter px-4 py-2 bg-gray-200 text-gray-800 rounded-full">😊 Happiness</button>
-                <button id="filterSurprise" class="emotion-filter px-4 py-2 bg-gray-200 text-gray-800 rounded-full">😲 Surprise</button>
+            <div class="emotion-filters flex flex-wrap gap-2 mb-6">
+                <button id="filterSadness" class="emotion-filter touch-target px-4 py-2 bg-blue-600 text-white rounded-full">😢 Sadness</button>
+                <button id="filterAnger" class="emotion-filter touch-target px-4 py-2 bg-gray-200 text-gray-800 rounded-full">😠 Anger</button>
+                <button id="filterFear" class="emotion-filter touch-target px-4 py-2 bg-gray-200 text-gray-800 rounded-full">😨 Fear</button>
+                <button id="filterDisgust" class="emotion-filter touch-target px-4 py-2 bg-gray-200 text-gray-800 rounded-full">🤢 Disgust</button>
+                <button id="filterHappiness" class="emotion-filter touch-target px-4 py-2 bg-gray-200 text-gray-800 rounded-full">😊 Happiness</button>
+                <button id="filterSurprise" class="emotion-filter touch-target px-4 py-2 bg-gray-200 text-gray-800 rounded-full">😲 Surprise</button>
             </div>
 
             <div id="memeCard" class="bg-white rounded-2xl shadow-xl p-6 card-shadow"></div>
@@ -256,7 +444,7 @@
             <h2 class="text-3xl font-bold mb-2">🏛️ Student Showcase</h2>
             <p class="text-gray-600 mb-6">Our students participated and created their own memes related to scientific works. * the images are clickable.</p>
 
-            <div class="grid md:grid-cols-3 gap-6">
+            <div class="showcase-grid grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 <!-- Design Requirements -->
                 <div class="bg-white rounded-xl shadow-lg overflow-hidden card-shadow">
                     <div class="bg-blue-100 p-4 border-b">
@@ -335,7 +523,7 @@
                     <p class="text-gray-700">According to Hans Vermeer, translation is mainly an intention-based work. In memes, "fidelity to the original" is secondary in relation to "fidelity to the purpose."</p>
                     
                     <details class="mt-4 group">
-                        <summary class="text-blue-600 font-medium cursor-pointer hover:text-blue-800 list-none flex items-center gap-2">
+                        <summary class="touch-target text-blue-600 font-medium cursor-pointer hover:text-blue-800 list-none flex items-center gap-2">
                             <span>▼ Read more</span>
                         </summary>
                         <div class="mt-3 pl-4 space-y-3 text-gray-600">
@@ -355,7 +543,7 @@
                     <p class="text-gray-700">An approach in which the translator works not only with text, but with all other channels of meaning transmission (modalities), such as images, sound, video, etc. A meme is not just text with a picture, but a single semiotic object. The translation must take into account the "visual anchors" that already convey meaning.</p>
                     
                     <details class="mt-4 group">
-                        <summary class="text-blue-600 font-medium cursor-pointer hover:text-blue-800 list-none flex items-center gap-2">
+                        <summary class="touch-target text-blue-600 font-medium cursor-pointer hover:text-blue-800 list-none flex items-center gap-2">
                             <span>▼ Read more</span>
                         </summary>
                         <div class="mt-3 pl-4 space-y-3 text-gray-600">
@@ -389,11 +577,11 @@
                     <p class="text-gray-700">When translating memes, it is possible to use completely different strategies. We deliberately exaggerated in the examples above and would like to point out that the best final option may be a combination of several strategies, or something new, depending on the goal set for the translator (Skopos).</p>
                     
                     <details class="mt-4 group">
-                        <summary class="text-blue-600 font-medium cursor-pointer hover:text-blue-800 list-none flex items-center gap-2">
+                        <summary class="touch-target text-blue-600 font-medium cursor-pointer hover:text-blue-800 list-none flex items-center gap-2">
                             <span>▼ View strategy table</span>
                         </summary>
                         <div class="mt-4 overflow-x-auto">
-                            <table class="w-full text-sm border-collapse">
+                            <table class="strategy-table w-full text-sm border-collapse">
                                 <thead>
                                     <tr class="bg-gray-100">
                                         <th class="p-3 text-left font-semibold">Strategy</th>
@@ -433,10 +621,10 @@
                     <p class="text-lg">📊 Accuracy: <span id="modalAccuracy">0</span>%</p>
                 </div>
                 <div class="flex gap-3 justify-center">
-                    <button onclick="restartTest()" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-md hover:shadow-lg">
+                    <button onclick="restartTest()" class="touch-target px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-md hover:shadow-lg">
                         🔄 Start Again
                     </button>
-                    <button onclick="closeModal()" class="px-6 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition shadow-md hover:shadow-lg">
+                    <button onclick="closeModal()" class="touch-target px-6 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition shadow-md hover:shadow-lg">
                         🎭 Go to Lab
                     </button>
                 </div>
@@ -927,7 +1115,7 @@
                 <div class="grid md:grid-cols-2 gap-6">
                     <!-- Мем с цветным фоном -->
                     <div class="bg-gradient-to-br ${data.bgClass} rounded-xl p-6 flex flex-col items-center shadow-inner">
-                        <img src="${data.image}" class="w-full max-h-96 object-contain rounded-lg mb-4 shadow-md" alt="${data.title} meme">
+                        <img src="${data.image}" class="meme-preview w-full object-contain rounded-lg mb-4 shadow-md" alt="${data.title} meme">
                         <p class="text-center font-bold text-xl">${data.originalText}</p>
                         <div class="mt-3 flex items-center gap-2">
                             <span class="text-3xl">${data.emoji}</span>
@@ -1000,7 +1188,7 @@
             let html = '';
             q.options.forEach((opt, idx) => {
                 html += `
-                    <div class="option-btn p-4 border rounded-lg hover:bg-blue-50 cursor-pointer transition ${answered ? 'pointer-events-none opacity-60' : ''}" data-idx="${idx}">
+                    <div class="option-btn touch-target p-4 border rounded-lg hover:bg-blue-50 cursor-pointer transition ${answered ? 'pointer-events-none opacity-60' : ''}" data-idx="${idx}">
                         ${opt}
                     </div>
                 `;
@@ -1019,12 +1207,12 @@
                     gifContainer.innerHTML = '';
                     if (isCorrect) {
                         const gifIndex = currentIndex % correctGifs.length;
-                        gifContainer.innerHTML = `<img src="${correctGifs[gifIndex]}" class="w-48 h-48 object-cover rounded-lg shadow-md">`;
+                        gifContainer.innerHTML = `<img src="${correctGifs[gifIndex]}" class="w-full max-w-xs h-auto object-cover rounded-lg shadow-md">`;
                         feedbackText.innerHTML = `<span class="font-bold text-green-600 text-xl">✅ Correct!</span> <span class="text-gray-700">${currentQuestions[currentIndex].explanation}</span>`;
                         correctAnswers++;
                     } else {
                         const gifIndex = currentIndex % wrongGifs.length;
-                        gifContainer.innerHTML = `<img src="${wrongGifs[gifIndex]}" class="w-48 h-48 object-cover rounded-lg shadow-md">`;
+                        gifContainer.innerHTML = `<img src="${wrongGifs[gifIndex]}" class="w-full max-w-xs h-auto object-cover rounded-lg shadow-md">`;
                         feedbackText.innerHTML = `
                             <span class="font-bold text-red-600 text-xl">❌ Wrong.</span> 
                             <span class="text-gray-700">${currentQuestions[currentIndex].explanation}</span><br>

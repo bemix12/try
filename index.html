@@ -228,62 +228,54 @@
 <!-- 0. ALGORITHM -->
 <section id="algorithm" class="scroll-mt-20">
     <h2 class="text-3xl font-bold mb-2">🧠 Algorithm for Translating Internet Memes</h2>
-    <p class="text-gray-600 mb-6">Two versions of the translation workflow: 1) simplified and modern, 2) academic with sources and detailed theory.</p>
+    <p class="text-gray-600 mb-6">
+        Two versions of the translation workflow: 1) simplified and modern, 2) academic with sources and detailed theory.
+    </p>
     
     <div class="grid md:grid-cols-2 gap-8">
         
-        <!-- Карточка 1: Simplified -->
-        <div class="bg-white rounded-2xl shadow-xl overflow-hidden card-shadow">
+        <!-- Simplified (ПЕРВАЯ!) -->
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden card-shadow hover:shadow-2xl transition">
             <div class="bg-blue-50 p-4 border-b">
                 <h3 class="text-xl font-bold flex items-center gap-2">⚡ Simplified Modern Version</h3>
-                <p class="text-gray-600 text-sm">A practical, step-by-step guide for quick meme adaptation.</p>
+                <p class="text-gray-600 text-sm">
+                    A practical, step-by-step guide for quick meme adaptation.
+                </p>
             </div>
-            <div style="position: relative;">
+
+            <div class="relative w-full" style="padding-top: 75%;">
                 <iframe 
-                    src="pdf/a4_guide1st.pdf#toolbar=1&navpanes=0&pagemode=none&scrollbar=0" 
-                    width="100%" 
-                    height="750px" 
-                    style="border: none; display: block;"
-                    title="Simplified Algorithm">
+                    src="https://heyzine.com/flip-book/e44a7dbb84.html"
+                    class="absolute top-0 left-0 w-full h-full"
+                    frameborder="0"
+                    allowfullscreen
+                    scrolling="no">
                 </iframe>
-                <!-- Тонкая полоса только поверх верхнего тулбара -->
-                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 32px; z-index: 10; background: transparent;" oncontextmenu="return false;"></div>
             </div>
         </div>
         
-        <!-- Карточка 2: Academic -->
-        <div class="bg-white rounded-2xl shadow-xl overflow-hidden card-shadow">
+        <!-- Academic -->
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden card-shadow hover:shadow-2xl transition">
             <div class="bg-purple-50 p-4 border-b">
                 <h3 class="text-xl font-bold flex items-center gap-2">📖 Academic Version with Sources</h3>
-                <p class="text-gray-600 text-sm">Detailed theory, references, and comprehensive methodology.</p>
+                <p class="text-gray-600 text-sm">
+                    Detailed theory, references, and comprehensive methodology.
+                </p>
             </div>
-            <div style="position: relative;">
+
+            <div class="relative w-full" style="padding-top: 75%;">
                 <iframe 
-                    src="pdf/a4_gide2nd.pdf#toolbar=1&navpanes=0&pagemode=none&scrollbar=0" 
-                    width="100%" 
-                    height="750px" 
-                    style="border: none; display: block;"
-                    title="Academic Algorithm">
+                    src="https://heyzine.com/flip-book/9fc2931e30.html"
+                    class="absolute top-0 left-0 w-full h-full"
+                    frameborder="0"
+                    allowfullscreen
+                    scrolling="no">
                 </iframe>
-                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 32px; z-index: 10; background: transparent;" oncontextmenu="return false;"></div>
             </div>
         </div>
         
     </div>
 </section>
-
-<!-- Защита от скачивания (глобальный скрипт) -->
-<script>
-(function() {
-    document.addEventListener('contextmenu', function(e) { e.preventDefault(); return false; });
-    document.addEventListener('keydown', function(e) {
-        if ((e.ctrlKey && (e.key === 's' || e.key === 'S' || e.key === 'p' || e.key === 'P' || e.key === 'u' || e.key === 'U')) ||
-            (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i')) || e.key === 'F12') {
-            e.preventDefault(); return false;
-        }
-    });
-})();
-</script>
 
         <!-- 1. ТЕСТИРОВАНИЕ -->
         <section id="testing" class="scroll-mt-20">

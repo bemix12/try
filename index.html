@@ -225,35 +225,49 @@
 
     <main class="max-w-6xl mx-auto px-4 py-12 space-y-20">
 
-        <!-- 0. ALGORITHM (НОВЫЙ РАЗДЕЛ, ИДЁТ ПЕРВЫМ) -->
-        <section id="algorithm" class="scroll-mt-20">
-            <h2 class="text-3xl font-bold mb-2">🧠 Algorithm for Translating Internet Memes</h2>
-            <p class="text-gray-600 mb-6">Two versions of the translation workflow are presented below. The first is a simplified modern pipeline, the second is an academic framework with detailed theory and sources. Both PDFs are viewable but protected from download.</p>
-            <div class="grid md:grid-cols-2 gap-8">
-                <!-- Карточка 1 -->
-                <div class="bg-white rounded-2xl shadow-xl p-6 card-shadow flex flex-col">
-                    <h3 class="text-xl font-bold mb-2 flex items-center gap-2">⚡ Simplified Modern Version</h3>
-                    <p class="text-gray-600 text-sm mb-4">A practical, step-by-step guide for quick meme adaptation.</p>
-                    <div class="pdf-protected-wrapper flex-1" style="height: 500px;">
-                        <iframe allowfullscreen="allowfullscreen" scrolling="no" class="fp-iframe" src="https://heyzine.com/flip-book/e44a7dbb84.html" style="position: absolute; top: -45px; left: 0; width: 100%; height: 550px; border: none;"></iframe>
-                        <div class="protect-layer" oncontextmenu="return false;"></div>
-                    </div>
-                </div>
-                <!-- Карточка 2 -->
-                <div class="bg-white rounded-2xl shadow-xl p-6 card-shadow flex flex-col">
-                    <h3 class="text-xl font-bold mb-2 flex items-center gap-2">📖 Academic Version with Sources</h3>
-                    <p class="text-gray-600 text-sm mb-4">Detailed theory, references, and comprehensive methodology.</p>
-                    <div class="pdf-protected-wrapper flex-1" style="height: 500px;">
-                        <iframe allowfullscreen="allowfullscreen" scrolling="no" class="fp-iframe" src="https://heyzine.com/flip-book/9fc2931e30.html" style="position: absolute; top: -45px; left: 0; width: 100%; height: 550px; border: none;"></iframe>
-                        <div class="protect-layer" oncontextmenu="return false;"></div>
-                    </div>
-                </div>
+        <!-- 0. ALGORITHM -->
+<section id="algorithm" class="scroll-mt-20">
+    <h2 class="text-3xl font-bold mb-2">🧠 Algorithm for Translating Internet Memes</h2>
+    <p class="text-gray-600 mb-6">Two versions of the translation workflow: 1) simplified and modern, 2) academic with sources and detailed theory.</p>
+    
+    <div class="grid md:grid-cols-2 gap-8">
+        
+        <!-- Карточка 1: Simplified -->
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden card-shadow">
+            <div class="bg-blue-50 p-4 border-b">
+                <h3 class="text-xl font-bold flex items-center gap-2">⚡ Simplified Modern Version</h3>
+                <p class="text-gray-600 text-sm">A practical, step-by-step guide for quick meme adaptation.</p>
             </div>
-            <!-- Краткое текстовое описание -->
-            <div class="mt-8 p-6 bg-gray-100 rounded-2xl card-shadow text-sm text-gray-700">
-                <p><strong>About the algorithm.</strong> The simplified version focuses on a pragmatic, Skopos-driven pipeline: identify the dominant emotion (Ekman), analyze visual anchors, select a translation macro-strategy, and produce the target meme. The academic version expands this with a literature review, detailed multimodal semiotic analysis, and justification of each choice according to modern translation theory. Use the tabs inside the documents to navigate between sections.</p>
+            <div style="position: relative;">
+                <iframe 
+                    allowfullscreen="allowfullscreen" 
+                    scrolling="no" 
+                    src="https://heyzine.com/flip-book/e44a7dbb84.html" 
+                    style="border: none; width: 100%; height: 550px; display: block;">
+                </iframe>
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; background: transparent;" oncontextmenu="return false;"></div>
             </div>
-        </section>
+        </div>
+        
+        <!-- Карточка 2: Academic -->
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden card-shadow">
+            <div class="bg-purple-50 p-4 border-b">
+                <h3 class="text-xl font-bold flex items-center gap-2">📖 Academic Version with Sources</h3>
+                <p class="text-gray-600 text-sm">Detailed theory, references, and comprehensive methodology.</p>
+            </div>
+            <div style="position: relative;">
+                <iframe 
+                    allowfullscreen="allowfullscreen" 
+                    scrolling="no" 
+                    src="https://heyzine.com/flip-book/9fc2931e30.html" 
+                    style="border: none; width: 100%; height: 550px; display: block;">
+                </iframe>
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; background: transparent;" oncontextmenu="return false;"></div>
+            </div>
+        </div>
+        
+    </div>
+</section>
 
         <!-- 1. ТЕСТИРОВАНИЕ -->
         <section id="testing" class="scroll-mt-20">

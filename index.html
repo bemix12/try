@@ -238,13 +238,17 @@
                 <h3 class="text-xl font-bold flex items-center gap-2">⚡ Simplified Modern Version</h3>
                 <p class="text-gray-600 text-sm">A practical, step-by-step guide for quick meme adaptation.</p>
             </div>
-            <iframe 
-                src="pdf/a4_guide1st.pdf#toolbar=1&navpanes=1" 
-                width="100%" 
-                height="550px" 
-                style="border: none; display: block;"
-                title="Simplified Algorithm">
-            </iframe>
+            <div style="position: relative;">
+                <iframe 
+                    src="pdf/a4_guide1st.pdf#toolbar=1&navpanes=0&pagemode=none&scrollbar=0" 
+                    width="100%" 
+                    height="750px" 
+                    style="border: none; display: block;"
+                    title="Simplified Algorithm">
+                </iframe>
+                <!-- Тонкая полоса только поверх верхнего тулбара -->
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 32px; z-index: 10; background: transparent;" oncontextmenu="return false;"></div>
+            </div>
         </div>
         
         <!-- Карточка 2: Academic -->
@@ -253,35 +257,29 @@
                 <h3 class="text-xl font-bold flex items-center gap-2">📖 Academic Version with Sources</h3>
                 <p class="text-gray-600 text-sm">Detailed theory, references, and comprehensive methodology.</p>
             </div>
-            <iframe 
-                src="pdf/a4_gide2nd.pdf#toolbar=1&navpanes=1" 
-                width="100%" 
-                height="550px" 
-                style="border: none; display: block;"
-                title="Academic Algorithm">
-            </iframe>
+            <div style="position: relative;">
+                <iframe 
+                    src="pdf/a4_gide2nd.pdf#toolbar=1&navpanes=0&pagemode=none&scrollbar=0" 
+                    width="100%" 
+                    height="750px" 
+                    style="border: none; display: block;"
+                    title="Academic Algorithm">
+                </iframe>
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 32px; z-index: 10; background: transparent;" oncontextmenu="return false;"></div>
+            </div>
         </div>
         
     </div>
 </section>
 
-<!-- Защита от скачивания (правая кнопка и клавиши) -->
+<!-- Защита от скачивания (глобальный скрипт) -->
 <script>
 (function() {
-    // Блокировка правого клика на всей странице
-    document.addEventListener('contextmenu', function(e) {
-        e.preventDefault();
-        return false;
-    });
-    
-    // Блокировка клавиш
+    document.addEventListener('contextmenu', function(e) { e.preventDefault(); return false; });
     document.addEventListener('keydown', function(e) {
-        // Ctrl+S, Ctrl+P, Ctrl+U, Ctrl+Shift+I (DevTools), F12
         if ((e.ctrlKey && (e.key === 's' || e.key === 'S' || e.key === 'p' || e.key === 'P' || e.key === 'u' || e.key === 'U')) ||
-            (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i')) ||
-            e.key === 'F12') {
-            e.preventDefault();
-            return false;
+            (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i')) || e.key === 'F12') {
+            e.preventDefault(); return false;
         }
     });
 })();
